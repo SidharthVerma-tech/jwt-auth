@@ -1,10 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser')
 const authRoutes = require('./routes/auth.routes')
+const {protected, checkUser} = require('./controller/user.controller')
 const app = express();
 
 // middleware
 app.use(express.json())
+app.use(cookieParser())
 app.use(express.static('public'));
 // view engine
 app.set('view engine', 'ejs');
@@ -21,7 +24,7 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // routes
 //jCpzuvhlwmIwWjlx
-
+app.get('*', checkUser)
 app.get('/', (req, res) => res.render('home'));
-app.get('/smoothies', (req, res) => res.render('smoothies'));
+app.get('/smoothies',protected, (req, res) => res.render('smoothies'));
 app.use(authRoutes)
